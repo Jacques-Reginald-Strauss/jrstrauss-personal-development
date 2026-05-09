@@ -77,4 +77,15 @@ footer { display:flex; justify-content:space-between; gap:14px; color:var(--mute
   border-radius: 20px;
   padding: 16px;
   margin: 16px 0 24px;
+}.workout-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.table-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
 }

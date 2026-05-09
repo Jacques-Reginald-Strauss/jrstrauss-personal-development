@@ -230,13 +230,64 @@ function App() {
     </LineChart>
   </ResponsiveContainer>
 </div>
-      <div className="target-grid"><StatCard icon={Scale} label="Start" value={`${TARGETS.startWeight}kg`} /><StatCard icon={Trophy} label="Goal" value={`${TARGETS.goalWeight}kg`} /><StatCard icon={Activity} label="Gain needed" value={`${TARGETS.goalWeight - TARGETS.startWeight}kg`} /><StatCard icon={CalendarDays} label="Timeline" value="90 days" /></div><h3>Weight Check-ins</h3><div className="list">{state.weeklyWeights.length === 0 && <p>No weight check-ins yet.</p>}{state.weeklyWeights.map((w, i) => <div className="item" key={i}><b>{w.date}</b><span>{w.weight} kg</span></div>)}</div><h3>Notes</h3><textarea value={state.notes} onChange={e => update({ notes: e.target.value })} placeholder="Energy, sleep, gym confidence, stress, appetite, wins..." /><button className="danger" onClick={resetToday}><RotateCcw size={16}/> Reset today</button></main>}
+<h3>Workout History</h3>
+<div className="table">
+  {[...Object.entries(state.completedExercises)]
+    .filter(([_, done]) => done)
+    .map(([key]) => {
+      const index = key.split("-").pop();
+      const day = key.replace(`-${index}`, "");
+      const workout = WORKOUTS.find(w => w.day === day);
+      const exercise = workout?.exercises?.[Number(index)];
 
-      {tab === "guide" && <main className="panel"><h2>JRStrauss Rules</h2><div className="rules"><p><b>Nutrition:</b> eat 4-6 times daily. Prioritize eggs, chicken, beef, rice, oats, maas, potatoes, bananas and peanut butter.</p><p><b>Training:</b> 4 days per week. Compound lifts first. Add weight only when form is solid.</p><p><b>Progression:</b> upper body +1.25-2.5kg increments; lower body +2.5-5kg increments.</p><p><b>Recovery:</b> sleep before midnight as often as possible. Growth happens outside the gym.</p><p><b>Mindset:</b> discipline today, legacy tomorrow. Small increases compound.</p></div></main>}
+      return (
+        <div className="table-row" key={key}>
+          <Dumbbell size={18} />
+      
+          <div className="workout-info">
+            <strong>{day}</strong>
+      
+            <span>
+              {exercise?.name ?? "Workout completed"}
+            </span>
+      
+            <span>
+              {exercise?.sets
+                ? `${exercise.sets} sets`
+                : "Tracked session"}
+            </span>
+      
+            <span>
+              {exercise?.reps
+                ? `${exercise.reps} reps`
+                : "Consistency logged"}
+            </span>
+      
+            <span>
+              {exercise?.weight ?? "Bodyweight / form focus"}
+            </span>
+          </div>
+        </div>
+      );
+    })}
+</div>
+<div className="target-grid">
+  <StatCard
+    icon={Scale}
+    label="Current Weight"
+    value={`${state.weight || TARGETS.startWeight} kg`}
+    sub={`Goal ${TARGETS.goalWeight}kg`}
+  />
 
+  <StatCard
+    icon={Activity}
+    label="Workout Completion"
+    value={`${Object.values(state.completedExercises).filter(Boolean).length}`}
+    sub="Exercises completed"
+  />
+</div></main>}
       <footer><span>JRStrauss Personal Development App</span><span>{session ? "Cloud-synced with Supabase" : "Local mode until sign-in"}</span></footer>
-    </div>
-  );
+      </div>
+);
 }
-
 createRoot(document.getElementById("root")).render(<App />);
