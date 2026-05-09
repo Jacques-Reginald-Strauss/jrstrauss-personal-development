@@ -1,0 +1,20 @@
+{
+  "name": "jrstrauss-personal-development-supabase",
+  "version": "2.0.0",
+  "private": true,
+  "description": "JRStrauss Personal Development App with Supabase login and cloud sync",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "latest",
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "lucide-react": "latest"
+  },
+  "devDependencies": {}
+}
