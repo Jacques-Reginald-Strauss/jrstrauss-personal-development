@@ -7,7 +7,15 @@ import {
 } from "lucide-react";
 import { supabase, hasSupabaseConfig } from "./supabaseClient";
 import "./styles.css";
-
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid
+} from "recharts";
 const TARGETS = { calories: [2800, 3100], protein: [140, 160], water: 3, sleep: [7, 8], startWeight: 65, goalWeight: 72 };
 
 const MEAL_PLAN = [
@@ -208,7 +216,21 @@ function App() {
 
       {tab === "workouts" && <main className="panel"><div className="section-head"><h2>Workout Plan</h2><select value={workoutDay} onChange={e => setWorkoutDay(Number(e.target.value))}>{WORKOUTS.map((d, i) => <option key={d.day} value={i}>{d.day} - {d.title}</option>)}</select></div><div className={`workout-title ${currentWorkout.color}`}><Dumbbell /> {currentWorkout.title}</div><div className="exercise-table"><div className="table-head"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Weight</span><span>Rest</span></div>{currentWorkout.exercises.map((ex, i) => <label className="table-row" key={i}><input type="checkbox" checked={!!state.completedExercises[`${workoutDay}-${i}`]} onChange={() => toggleExercise(i)} /><span>{ex[0]}</span><span>{ex[1]}</span><span>{ex[2]}</span><span>{ex[3]}</span><span>{ex[4]}</span></label>)}</div><section className="callout"><h3>How to choose the correct weight</h3><p><b>Perfect weight:</b> you complete the target reps with good form and only 1-2 reps left in reserve. If you can do 4+ extra reps, increase weight next time. If form breaks, reduce weight.</p></section></main>}
 
-      {tab === "progress" && <main className="panel"><h2>Progress Tracker</h2><div className="target-grid"><StatCard icon={Scale} label="Start" value={`${TARGETS.startWeight}kg`} /><StatCard icon={Trophy} label="Goal" value={`${TARGETS.goalWeight}kg`} /><StatCard icon={Activity} label="Gain needed" value={`${TARGETS.goalWeight - TARGETS.startWeight}kg`} /><StatCard icon={CalendarDays} label="Timeline" value="90 days" /></div><h3>Weight Check-ins</h3><div className="list">{state.weeklyWeights.length === 0 && <p>No weight check-ins yet.</p>}{state.weeklyWeights.map((w, i) => <div className="item" key={i}><b>{w.date}</b><span>{w.weight} kg</span></div>)}</div><h3>Notes</h3><textarea value={state.notes} onChange={e => update({ notes: e.target.value })} placeholder="Energy, sleep, gym confidence, stress, appetite, wins..." /><button className="danger" onClick={resetToday}><RotateCcw size={16}/> Reset today</button></main>}
+      {tab === "progress" && <main className="panel"><h2>Progress Tracker</h2>
+      <h3>Bodyweight Trend</h3>
+
+<div className="chart-box">
+  <ResponsiveContainer width="100%" height={260}>
+    <LineChart data={state.weeklyWeights}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="date" />
+      <YAxis domain={["dataMin - 2", "dataMax + 2"]} />
+      <Tooltip />
+      <Line type="monotone" dataKey="weight" strokeWidth={3} />
+    </LineChart>
+  </ResponsiveContainer>
+</div>
+      <div className="target-grid"><StatCard icon={Scale} label="Start" value={`${TARGETS.startWeight}kg`} /><StatCard icon={Trophy} label="Goal" value={`${TARGETS.goalWeight}kg`} /><StatCard icon={Activity} label="Gain needed" value={`${TARGETS.goalWeight - TARGETS.startWeight}kg`} /><StatCard icon={CalendarDays} label="Timeline" value="90 days" /></div><h3>Weight Check-ins</h3><div className="list">{state.weeklyWeights.length === 0 && <p>No weight check-ins yet.</p>}{state.weeklyWeights.map((w, i) => <div className="item" key={i}><b>{w.date}</b><span>{w.weight} kg</span></div>)}</div><h3>Notes</h3><textarea value={state.notes} onChange={e => update({ notes: e.target.value })} placeholder="Energy, sleep, gym confidence, stress, appetite, wins..." /><button className="danger" onClick={resetToday}><RotateCcw size={16}/> Reset today</button></main>}
 
       {tab === "guide" && <main className="panel"><h2>JRStrauss Rules</h2><div className="rules"><p><b>Nutrition:</b> eat 4-6 times daily. Prioritize eggs, chicken, beef, rice, oats, maas, potatoes, bananas and peanut butter.</p><p><b>Training:</b> 4 days per week. Compound lifts first. Add weight only when form is solid.</p><p><b>Progression:</b> upper body +1.25-2.5kg increments; lower body +2.5-5kg increments.</p><p><b>Recovery:</b> sleep before midnight as often as possible. Growth happens outside the gym.</p><p><b>Mindset:</b> discipline today, legacy tomorrow. Small increases compound.</p></div></main>}
 
