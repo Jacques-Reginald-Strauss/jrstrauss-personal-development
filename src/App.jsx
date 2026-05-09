@@ -46,7 +46,34 @@ function AuthBox({ session, setSession }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authMsg, setAuthMsg] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
 
+  const sendPasswordReset = async () => {
+    const { error } =
+      await supabase.auth.resetPasswordForEmail(
+        resetEmail || email,
+        {
+          redirectTo:
+            "https://jrstrauss-personal-development.netlify.app",
+        }
+      );
+  
+    setAuthMsg(
+      error
+        ? error.message
+        : "Password reset email sent. Check your Gmail."
+    );
+  };
+  
+  const signInWithGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo:
+          "https://jrstrauss-personal-development.netlify.app",
+      },
+    });
+  };
   async function submit(e) {
     e.preventDefault();
     setAuthMsg("");
@@ -74,6 +101,21 @@ function AuthBox({ session, setSession }) {
         <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="Email address" />
         <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Password" />
         <button className="gold">{mode === "signin" ? "Sign in" : "Sign up"}</button>
+        <button
+  type="button"
+  className="linkbtn"
+  onClick={sendPasswordReset}
+>
+  Forgot password?
+</button>
+
+<button
+  type="button"
+  className="gold"
+  onClick={signInWithGoogle}
+>
+  Continue with Google
+</button>
       </div>
       <button type="button" className="linkbtn" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>
         {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
